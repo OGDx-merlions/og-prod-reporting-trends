@@ -1,0 +1,519 @@
+<!--
+    Relative paths assume component is being run from inside an app or another component, where dependencies are flat
+    siblings. When this component is run from its own repo (e.g. tests, examples), we assume the server is started with
+    'gulp serve' (or similar server setup) to enable correct finding of bower dependencies for local runs.
+-->
+<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../px-d3-imports/px-d3-imports.html" />
+
+<link rel="import" href="css/og-prod-reporting-trends-styles.html">
+<link rel="import" href="trend-chart.html">
+
+<script src="../jquery/dist/jquery.min.js"></script>
+<script src="../moment/min/moment.min.js"></script>
+
+<!--
+REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
+
+### Usage
+
+    <og-prod-reporting-trends data="{{props.data.value}}" show-legends show-sub-title show-trend-icon show-trend-sub-title></og-prod-reporting-trends>
+
+@element og-prod-reporting-trends
+@blurb REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
+@homepage index.html
+@demo index.html
+-->
+
+<dom-module id="og-prod-reporting-trends">
+  <template>
+    <style include="og-prod-reporting-trends-styles"></style>
+    <div id="wrapper" style$="height: {{wrapperHeight}}px">
+      <template id="template" is="dom-repeat" items="{{_getProcessedData(data)}}" as="carditem" index-as="cardindex" on-dom-change="_handleDomChangeEvent">
+        <div id="card{{cardindex}}" class="cards" style$="{{_display(cardindex)}}">
+          <div id="legends{{cardindex}}" class="flex flex--row flex--justify flex--top legends" style$="{{_displayLegends(showLegends)}}"></div>
+          <template is="dom-repeat" items="{{carditem}}" as="rowitem" index-as="rowindex">
+            <div id="cardRow{{cardindex}}{{rowindex}}" class="flex flex--wrap trend-cont">
+              <template is="dom-repeat" items="{{rowitem}}" as="colitem" index-as="colindex">
+                <div id="cardCol{{cardindex}}{{rowindex}}{{colindex}}" class="u-1/2 u-1/2-desk cardCol">
+                  <template is="dom-if" if="{{_isNotGreyBox(colitem)}}">
+                    <div class="flex flex--row flex--justify flex--top headingRow">
+                      <div>
+                        <div id="colHeading" class="flex flex--col flex--spaced flex--top heading">
+                          <div>
+                            <span class="products">{{colitem.title}} ({{colitem.unit}}): {{colitem.chart.data.total}}</span>
+                          </div>
+                          <div style$="{{_displaySubTitle(showSubTitle)}}">
+                            <span class="cumulative">{{colitem.subtitle}}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <div id="colTrendHeading" class="flex flex--col flex--spaced flex--bottom trend">
+                          <div style$="{{_displayTrendIcon(showTrendIcon)}}">
+                            <px-icon icon="{{_getTrendIcon(colitem.istrendup)}}" class$="{{_getTrendClass(colitem.istrendup)}}"></px-icon>
+                          </div>
+                          <div style$="{{_displayTrendSubTitle(showTrendSubTitle)}}">
+                            <span class="cumulative">{{colitem.trend_subtitle}}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                  <trend-chart data="[[colitem]]"></trend-chart>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+      <div class="flex flex--row flex--center flex--bottom">
+        <div class="flex__item--bottom" id="pagination">
+          <span id="arrspan">
+            <span class="arrows">
+              <px-icon id="prevIcon" icon="px-nav:back" class="pagination-icon arrow-inactive"></px-icon>
+            </span>
+            <ul id="pagin"></ul>
+            <span class="arrows">
+              <px-icon id="nextIcon" icon="px-nav:next" class="pagination-icon arrow-active"></px-icon>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: "og-prod-reporting-trends",
+    properties: {
+      data: {
+        type: Object,
+        value: {}
+      },
+      pageSize: {
+        type: Number,
+        value: 1
+      },
+      totalPages: {
+        type: Number,
+        value: 0
+      },
+      wrapperHeight: {
+        type: Number,
+        value: 600
+      },
+      minHeight: {
+        type: Number,
+        value: 300
+      },
+      heightDifference: {
+        type: Number,
+        value: 60
+      },
+      legends: {
+        type: Array,
+        value: function () {
+          return [];
+        }
+      },
+      showLegends: {
+        type: Boolean,
+        value: false
+      },
+      showSubTitle: {
+        type: Boolean,
+        value: false
+      },
+      showTrendIcon: {
+        type: Boolean,
+        value: false
+      },
+      showTrendSubTitle: {
+        type: Boolean,
+        value: false
+      }
+    },
+    behaviors: [Polymer.IronResizableBehavior],
+    listeners: {
+      "iron-resize": "_onResize"
+    },
+    ready: function () { },
+    attached: function () {
+      Polymer.RenderStatus.afterNextRender(this, function () {
+        var cards = Polymer.dom(this.root).querySelectorAll(".cards");
+        if (cards.length > 0) {
+          this._paginate();
+        }
+      });
+      this.async(this.notifyResize, 1);
+      // this.async(function () {
+      //   // access sibling or parent elements here
+      //   //  var el = Polymer.dom(this.root).querySelector("#ida .classa");
+      //   //  console.log("el",el);
+      //   var cards = Polymer.dom(this.root).querySelectorAll(".cards");
+      //   console.log("cards", cards);
+      //   if (cards.length > 0) {
+      //     pdom._paginate();
+      //   }
+      // }, 1);
+    },
+    get parent() {
+      if (this.parentNode.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+        return this.parentNode.host;
+      }
+      return this.parentNode;
+    },
+    _onResize: function () {
+      this.debounce(
+        "triggerChildrenResize",
+        function () {
+          this._triggerChildrenResize();
+        },
+        300
+      );
+    },
+    _triggerChildrenResize: function () {
+      let cols = Polymer.dom(this.root).querySelectorAll(".cardCol");
+      let calculatedHeight = Math.min(
+        this.minHeight,
+        (this.wrapperHeight - this.heightDifference) / 2
+      );
+      cols.forEach(function (item, index) {
+        item.style.height = calculatedHeight + "px";
+        let headingRow = item.querySelector(".headingRow");
+        let trend = item.querySelector("trend-chart");
+        if (headingRow) {
+          trend._resizeChart(
+            item.offsetWidth,
+            item.offsetHeight - headingRow.offsetHeight
+          );
+        } else {
+          trend._resizeGreyBox(0, item.offsetHeight);
+        }
+      });
+    },
+    _getProcessedData: function (data) {
+      if (data) {
+        let tempdata = JSON.parse(JSON.stringify(data));
+        let processedData = [],
+          rows = [],
+          cols = [],
+          legends = [];
+        let pdom = this;
+        if (JSON.stringify(this.data) !== "{}") {
+          let length = Object.keys(tempdata).length;
+          let page = Math.ceil(length / 4);
+          let remaining = page * 4 - length;
+          if (remaining > 0) {
+            for (var i = 1; i <= remaining; i++) {
+              tempdata["greybox_" + i] = { name: "greybox" };
+            }
+          }
+
+          jQuery.each(tempdata, function (name, item) {
+            if (!name.startsWith("greybox")) {
+              if (!pdom._hasProperty(item, "chart")) {
+                item.chart = {};
+              }
+
+              if (!pdom._hasProperty(item.chart, "data")) {
+                item.chart.data = {};
+              }
+
+              if (!pdom._hasProperty(item.chart.data, "x")) {
+                item.chart.data.x = [];
+              }
+
+              if (!pdom._hasProperty(item.chart.data, "y")) {
+                item.chart.data.y = [];
+              }
+
+              if (pdom._hasProperty(item.chart.data, "use_actual_dates") && item.chart.data.use_actual_dates === true) {
+                if (pdom._hasProperty(item.chart.data, "istimestamp") && item.chart.data.istimestamp === true) {
+                  item.chart.data.x = item.chart.data.x.map(function (item) {
+                    return pdom._convertToDate(item);
+                  });
+                }
+              } else {
+                let displayMode = pdom._hasProperty(item.chart.data, "displayMode") ? item.chart.data.displayMode : "months";
+                item.chart.data.x = pdom._getDates(item.chart.data.x, displayMode);
+              }
+              if (pdom._hasProperty(item.chart.data, "pick_last") && item.chart.data.pick_last > 0) {
+                item.chart.data.x = pdom._sliceElements(item.chart.data.x, item.chart.data.pick_last);
+                item.chart.data.y = pdom._sliceElements(item.chart.data.y, item.chart.data.pick_last);
+              }
+              item.chart.data.total = pdom._getComputedTotal(item.chart.data.y);
+              item.chart.data.istrendup = pdom._isUpTrend(item.chart.data.y);
+              cols.push(item);
+
+              let legend = {};
+              if (pdom._hasProperty(item, "title")) {
+                legend.name = item.title;
+              }
+              if (pdom._hasProperty(item.chart, "trace") && pdom._hasProperty(item.chart.trace, "line")) {
+                $.extend(true, legend, item.chart.trace.line);
+              } else {
+                legend.color = "#ccc";
+                legend.dash = "solid";
+              }
+              legends.push(legend);
+            } else {
+              cols.push(item);
+            }
+            if (cols.length === 2) {
+              rows.push(cols);
+              cols = [];
+            }
+            if (rows.length === 2) {
+              processedData.push(rows);
+              pdom.legends.push(legends);
+              legends = [];
+              rows = [];
+            }
+          });
+        }
+        // console.log("processedData", processedData);
+        return processedData;
+      }
+      return [];
+    },
+    _convertToDate: function (timestamp) {
+      let epoch;
+      if (timestamp >= 100000000000 || timestamp <= -100000000000) {
+        epoch = Math.floor(timestamp / 1000);
+      } else {
+        epoch = timestamp;
+      }
+      return moment.unix(epoch).format("YYYY-MM-DD");
+    },
+    _getComputedTotal: function (inputArray) {
+      let total = 0;
+      if (inputArray) {
+        inputArray.forEach(function (item, index) {
+          total += item;
+        });
+      }
+      return d3.format(".3s")(Math.round(total));
+    },
+    _getDates: function (arr, unit) {
+      return arr
+        ? arr
+          .map(function (item, index) {
+            return moment(new Date())
+              .subtract(index + 1, unit)
+              .format("YYYY-MM-DD");
+          })
+          .reverse()
+        : [];
+    },
+    _isUpTrend: function (arr) {
+      return arr ? arr[arr.length - 1] > arr[arr.length - 2] : false;
+    },
+    _sliceElements: function (arr, count) {
+      return arr ? (arr.length > count ? arr.slice(-count) : arr) : [];
+    },
+    _getTrendIcon: function (isTrendUp) {
+      return isTrendUp ? "px-nav:up" : "px-nav:down";
+    },
+    _getTrendClass: function (isTrendUp) {
+      return isTrendUp ? "green-trend" : "red-trend";
+    },
+    _isNotGreyBox: function (colitem) {
+      return colitem.name && !colitem.name.startsWith("greybox");
+    },
+    _display: function (cardindex) {
+      return cardindex === 0 ? "" : "display: none";
+    },
+    _displayLegends: function (showLegends) {
+      return "visibility: " + (showLegends ? "visible" : "hidden");
+    },
+    _displaySubTitle: function (showSubTitle) {
+      return "visibility: " + (showSubTitle ? "visible" : "hidden");
+    },
+    _displayTrendIcon: function (showTrendIcon) {
+      return "visibility: " + (showTrendIcon ? "visible" : "hidden");
+    },
+    _displayTrendSubTitle: function (showTrendSubTitle) {
+      return "visibility: " + (showTrendSubTitle ? "visible" : "hidden");
+    },
+    _paginate: function () {
+      var pdom = this;
+      var cards = Polymer.dom(this.root).querySelectorAll(".cards");
+      this.totalPages = Math.ceil(cards.length / this.pageSize);
+
+      for (var i = 1; i <= this.totalPages; i++) {
+        let li = document.createElement("li");
+        let span = document.createElement("span");
+        span.innerHTML = i;
+        if (i === 1 && this.totalPages > 1) {
+          span.setAttribute("class", "text-active");
+        }
+        li.appendChild(span);
+        Polymer.dom(this.$.pagin).appendChild(li);
+      }
+      if (this.totalPages > 1) {
+        let icons = this.$.pagination.querySelectorAll("px-icon");
+        icons.forEach(function (item) {
+          if (item.getAttribute("id") == "prevIcon") {
+            item.setAttribute("page", 1);
+          } else {
+            item.setAttribute("page", pdom.totalPages);
+          }
+          item.addEventListener("tap", function (e) {
+            pdom._paginateFirstLast(e);
+          });
+        });
+
+        let spans = this.$.pagin.querySelectorAll("li span");
+        $(spans).click(function () {
+          $(spans).removeClass("text-active");
+          $(this).addClass("text-active");
+          pdom._showPage(parseInt($(this).text()));
+          pdom._toggleFirstLast(parseInt($(this).text()));
+        });
+      } else {
+        let arrows = this.$.pagination.querySelectorAll(".arrows px-icon");
+        $(arrows)
+          .removeClass("arrow-active")
+          .addClass("arrow-inactive");
+      }
+    },
+    _showPage: function (page) {
+      let pdom = this;
+      var cards = Polymer.dom(this.root).querySelectorAll(".cards");
+      $(cards).hide("slow");
+      $(cards)
+        .eq((page - 1) * this.pageSize)
+        .show("slow", function () {
+          pdom._triggerChildrenResize();
+        });
+    },
+    _paginateFirstLast: function (evt) {
+      let elem = evt.currentTarget;
+      if (elem.classList.contains("arrow-inactive")) {
+        event.stopPropagation();
+        return;
+      }
+      let page = parseInt(elem.getAttribute("page"));
+      var pdom = this;
+      let spans = this.$.pagin.querySelectorAll("li span");
+      $(spans).removeClass("text-active");
+      $(spans).each(function (index) {
+        if (page === parseInt($(this).text())) {
+          $(this).addClass("text-active");
+          pdom._showPage(page);
+          pdom._toggleFirstLast(page);
+        }
+      });
+    },
+    _toggleFirstLast: function (page) {
+      let previcon = this.$.prevIcon;
+      let nexticon = this.$.nextIcon;
+      if (page > 1) {
+        if (page === this.totalPages) {
+          nexticon.classList.remove("arrow-active");
+          nexticon.classList.add("arrow-inactive");
+          previcon.classList.remove("arrow-inactive");
+          previcon.classList.add("arrow-active");
+        } else {
+          nexticon.classList.remove("arrow-inactive");
+          nexticon.classList.add("arrow-active");
+          previcon.classList.remove("arrow-inactive");
+          previcon.classList.add("arrow-active");
+        }
+      } else {
+        previcon.classList.remove("arrow-active");
+        previcon.classList.add("arrow-inactive");
+        nexticon.classList.remove("arrow-inactive");
+        nexticon.classList.add("arrow-active");
+      }
+    },
+    _stampLegends: function (item, index) {
+      if (this.legends.length >= index) {
+        let options = this.legends[index];
+
+        let svg = d3
+          .select(item)
+          .append("svg")
+          .attr("viewBox", "0 0 500 10")
+          .attr("width", "500px")
+          .attr("height", "25px");
+
+        let g = svg
+          .selectAll(".legends")
+          .data(options.slice())
+          .enter()
+          .append(function (d) {
+            var g = document.createElementNS(d3.namespaces.svg, "g");
+            var child;
+            if (d.dash && (d.dash === "dot" || d.dash === "dashdot")) {
+              child = document.createElementNS(d3.namespaces.svg, "line");
+              child.setAttribute("x1", 0);
+              child.setAttribute("x2", 20);
+              child.setAttribute("y1", 5);
+              child.setAttribute("y2", 5);
+              child.setAttribute("stroke-dasharray", (d.dash === "dashdot") ? "6 1 2 3" : "3 2");
+              child.setAttribute("stroke-width", 3.5);
+              child.setAttribute("stroke", d.color ? d.color : "#CCC");
+            } else {
+              child = document.createElementNS(d3.namespaces.svg, "rect");
+              child.setAttribute("x", 0);
+              child.setAttribute("y", 3.5);
+              child.setAttribute("width", 20);
+              child.setAttribute("height", 3.5);
+              child.setAttribute("fill", d.color ? d.color : "#CCC");
+            }
+
+            var text = document.createElementNS(d3.namespaces.svg, "text");
+            text.setAttribute("font-family", "GEInspiraSans-Regular, GE Inspira Sans");
+            text.setAttribute("font-size", "0.9em");
+            text.setAttribute("font-weight", "normal");
+            text.setAttribute("fill", "#59717f");
+
+            var tspan = document.createElementNS(d3.namespaces.svg, "tspan");
+            tspan.setAttribute("x", 25);
+            tspan.setAttribute("y", 9);
+            tspan.innerHTML = d.name;
+
+            text.append(tspan);
+            g.append(child);
+            g.append(text);
+
+            return g;
+          })
+          .attr("transform", function (d, i) {
+            return "translate(" + (parseFloat(i) * 110 + 20) + ", 0)";
+          });
+
+        let xoffset = 12;
+        svg.selectAll("g").attr("transform", function (d, i) {
+          let xpos =
+            d3
+              .select(this)
+              .select("text")
+              .node()
+              .getComputedTextLength() + 40;
+          xoffset += xpos;
+          return "translate(" + (xoffset - xpos) + ", 0)";
+        });
+      }
+    },
+    _handleDomChangeEvent: function () {
+      let pdom = this;
+      this.debounce(
+        "domEndEvent",
+        function () {
+          let legend_elems = Polymer.dom(this.root).querySelectorAll(".legends");
+          legend_elems.forEach(function (item, index) {
+            pdom._stampLegends(item, index);
+          });
+        },
+        100
+      );
+    },
+    _hasProperty: function (node, property) {
+      return node && node.hasOwnProperty(property);
+    }
+  });
+</script>

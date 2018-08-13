@@ -1,0 +1,202 @@
+{
+  "schema_version": "1.0.0",
+  "elements": [
+    {
+      "description": "Component used to create four column chart layout with production trend charts. \n1. Each page holds four production charts. \n2. If there is no chart data in a page, it will be shown as a place holder with grey boxes.\n3. Each page can be navigated using the pagination.\n4. Handles chart column resizing based on the parent container size.\n\n### Usage\n\n    <og-prod-reporting-trends data='{{data}}'></og-prod-reporting-trends>",
+      "summary": "",
+      "path": "og-prod-reporting-trends.html",
+      "properties": [
+        {
+          "name": "data",
+          "type": "json array | null | undefined",
+          "description": "This property provides the data for the charts and layout.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 37,
+              "column": 6
+            },
+            "end": {
+              "line": 41,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "attributeType": "JSON Array"
+            }
+          },
+          "defaultValue": "{}"
+        },
+        {
+          "name": "wrapperHeight",
+          "type": "Number | null | undefined",
+          "description": "This property provides the height of the layout. Use both wrapperHeight and heightDifference property to define the card layout (padding/margin) to fit according to the SVG layout.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 37,
+              "column": 6
+            },
+            "end": {
+              "line": 41,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "attributeType": "Number"
+            }
+          },
+          "defaultValue": "600"
+        },
+        {
+          "name": "heightDifference",
+          "type": "Number | null | undefined",
+          "description": "This property provides the difference of height used to calculate each chart column's height based on the wrapper height property, Math.min(this.minHeight = 300,(this.wrapperHeight - this.heightDifference) / 2).",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 37,
+              "column": 6
+            },
+            "end": {
+              "line": 41,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "attributeType": "Number"
+            }
+          },
+          "defaultValue": "60"
+        },
+        {
+          "name": "showLegends",
+          "type": "Boolean",
+          "description": "Including this property like <og-prod-reporting-trends show-legends></og-prod-reporting-trends> will show the legend panel.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 37,
+              "column": 6
+            },
+            "end": {
+              "line": 41,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "attributeType": "Boolean"
+            }
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "showSubTitle",
+          "type": "Boolean",
+          "description": "Including this property like <og-prod-reporting-trends show-sub-title></og-prod-reporting-trends> will show the sub title.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 37,
+              "column": 6
+            },
+            "end": {
+              "line": 41,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "attributeType": "Boolean"
+            }
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "showTrendIcon",
+          "type": "Boolean",
+          "description": "Including this property like <og-prod-reporting-trends show-trend-icon></og-prod-reporting-trends> will show the trend arrow icons.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 37,
+              "column": 6
+            },
+            "end": {
+              "line": 41,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "attributeType": "Boolean"
+            }
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "showTrendSubTitle",
+          "type": "Boolean",
+          "description": "Including this property like <og-prod-reporting-trends show-trend-sub-title></og-prod-reporting-trends> will show the trend sub title.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 37,
+              "column": 6
+            },
+            "end": {
+              "line": 41,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "attributeType": "Boolean"
+            }
+          },
+          "defaultValue": "false"
+        }
+      ],
+      "methods": [],
+      "staticMethods": [],
+      "demos": [
+        {
+          "url": "index.html",
+          "description": ""
+        }
+      ],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 29,
+          "column": 10
+        },
+        "end": {
+          "line": 61,
+          "column": 3
+        }
+      },
+      "privacy": "public",
+      "superclass": "HTMLElement",
+      "attributes": [],
+      "events": [],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "og-prod-reporting-trends"
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../px-d3-imports/px-d3-imports.html" />
+<link rel="import" href="css/trend-chart-styles.html">
+<script src="scripts/plotly-latest.min.js"></script>
+
+<dom-module id="trend-chart">
+  <template>
+    <style include="trend-chart-styles"></style>
+    <div id="trendChart"></div>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: "trend-chart",
+    properties: {
+      data: {
+        type: Object,
+        value: {}
+      },
+      isChartBox: {
+        type: Boolean,
+        value: false
+      }
+    },
+    listeners: {},
+    ready: function () { },
+    attached: function () {
+      this._drawPlots();
+    },
+    _drawPlots: function () {
+      if (JSON.stringify(this.data) !== "{}") {
+        if (this.data.name && this.data.name.startsWith("greybox")) {
+          this._renderGreyPlot();
+        } else {
+          this.isChartBox = true;
+          this._renderTrendPlot();
+        }
+      }
+    },
+    _renderTrendPlot: function () {
+      let layout = {
+        autosize: true,
+        margin: {
+          l: 60,
+          r: 30,
+          b: 50,
+          t: 20,
+          pad: 10
+        },
+        showlegend: false,
+        xaxis: {
+          fixedrange: true,
+          showticklabels: true
+        },
+        yaxis: {
+          fixedrange: true
+        },
+        hovermode: "closest"
+      };
+
+      if (this.data.chart && this.data.chart.layout) {
+        $.extend(true, layout, this.data.chart.layout);
+      }
+
+      let plot = this.$.trendChart;
+      plot.classList.add("chart-box");
+
+      Plotly.newPlot(plot, this._getTraces(), layout, {
+        displayModeBar: false
+      });
+    },
+    _getFormattedNumbers: function (arr) {
+      return arr
+        ? arr.map(function (item, index) {
+          return d3.format(".3s")(Math.round(item));
+        })
+        : [];
+    },
+    _renderGreyPlot: function () {
+      let plot = this.$.trendChart;
+      plot.classList.add("grey-box");
+    },
+    _resizeChart: function (width, height) {
+      if (width > 0 || height > 0) {
+        if (this.isChartBox) {
+          let params = {
+            "xaxis.autorange": true,
+            "yaxis.autorange": true,
+            'xaxis.dtick': 'M1'
+          };
+          if (width > 0) {
+            params.width = width;
+          }
+          if (height > 0) {
+            params.height = height;
+          }
+          Plotly.relayout(this.$.trendChart, params);
+        }
+      }
+    },
+    _resizeGreyBox: function (width, height) {
+      let style = window.getComputedStyle(this.$.trendChart, null);
+      if (width > 0) {
+        let hmargin =
+          parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+        this.$.trendChart.style.width = width - hmargin + "px";
+      }
+      if (height > 0) {
+        let vmargin =
+          parseInt(style.marginTop, 10) + parseInt(style.marginBottom, 10);
+        this.$.trendChart.style.height = height - vmargin + "px";
+      }
+    },
+    _getTraces: function () {
+      let trace = {
+        type: "scatter",
+        x: this.data.chart.data.x,
+        y: this.data.chart.data.y,
+        text: this._getFormattedNumbers(this.data.chart.data.y),
+        mode: "lines",
+        line: {
+          width: 3,
+          color: "#ccc",
+          dash: "solid"
+        },
+        hoverinfo: "x+text"
+      };
+      if (this.data.chart && this.data.chart.trace) {
+        $.extend(true, trace, this.data.chart.trace);
+      }
+      return [trace];
+    }
+  });
+</script>

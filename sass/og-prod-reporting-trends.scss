@@ -1,0 +1,145 @@
+/*
+ * Copyright (c) 2014 GE Global Research. All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of
+ * GE Global Research. The software may be used and/or copied only
+ * with the written permission of GE Global Research or in accordance
+ * with the terms and conditions stipulated in the agreement/contract
+ * under which the software has been supplied.
+ */
+
+//
+// Sass for the for the og-prod-reporting-trends component
+//
+// @author
+//
+
+// Settings
+@import "px-colors-design/_settings.colors.scss";
+
+// Tools
+
+// Generic
+@import "px-normalize-design/_generic.normalize.scss";
+@import "px-box-sizing-design/_generic.box-sizing.scss";
+@import "px-helpers-design/_generic.helpers.scss";
+
+// Base
+@import "px-flexbox-design/_base.flexbox.scss";
+@import "px-viewport-design/_base.viewport.scss";
+
+// Meta
+
+// Objects
+
+// Component
+
+// Trumps
+@import "px-spacing-responsive-design/_trumps.spacing-responsive.scss";
+@import "px-widths-responsive-design/_trumps.widths-responsive.scss";
+
+#wrapper {
+  display: block;
+
+  .legends {
+    height: 25px;
+  }
+
+  .trend-cont {
+    padding: 0.5em 0 0 0;
+
+    .green-trend {
+      --iron-icon-width: 18px;
+      --iron-icon-height: 18px;
+      stroke-width: 2;
+      stroke: #5b8737;
+    }
+
+    .red-trend {
+      --iron-icon-width: 18px;
+      --iron-icon-height: 18px;
+      stroke-width: 2;
+      stroke: red;
+    }
+
+    .cardCol {
+      min-height: 230px;
+    }
+
+    .heading {
+      padding-left: 0.8em;
+    }
+
+    .trend {
+      padding-right: 1em;
+    }
+
+    .arrow-cont {
+      padding: 0 0 0 1em;
+    }
+
+    .products {
+      font-size: 1.2em;
+    }
+
+    .cumulative {
+      font-size: 0.8em;
+      font-weight: normal;
+    }
+  }
+
+  #pagination {
+    display: table;
+
+    #arrspan {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .pagination-icon {
+      --iron-icon-width: 24px;
+      --iron-icon-height: 24px;
+      cursor: pointer;
+      stroke-width: 1.5;
+    }
+
+    .text-active {
+      color: #1e88e5;
+    }
+
+    .text-inactive {
+      color: #ddd;
+    }
+
+    // .arrows {
+    //   padding: 1em;
+    // }
+
+    [class*="arrows"]:first-child {
+      padding-right: 1em;
+    }
+    [class*="arrows"]:last-child {
+      padding-left: 1em;
+    }
+
+    .arrow-inactive {
+      stroke: #ddd;
+    }
+
+    .arrow-active {
+      stroke: rgb(83, 113, 126);
+    }
+
+    #pagin {
+      display: contents;
+      li {
+        display: inline-block;
+      }
+      span {
+        font-size: 1.4em;
+        cursor: pointer;
+        padding: 0.3em;
+      }
+    }
+  }
+}

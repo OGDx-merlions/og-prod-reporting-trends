@@ -1,0 +1,51 @@
+{
+  "name": "og-prod-reporting-trends",
+  "version": "0.0.1",
+  "main": [
+    "og-prod-reporting-trends.html"
+  ],
+  "ignore": [
+    ".*",
+    "npm-debug.log",
+    "gulpfile.js",
+    "sass",
+    "test",
+    "OSS_Notice.pdf",
+    ".github",
+    "og-prod-reporting-trends.png",
+    "LICENSE.md",
+    "CONTRIBUTING.md",
+    "HISTORY.md",
+    "README.md",
+    ".jshintrc",
+    ".editorconfig"
+  ],
+  "dependencies": {
+    "polymer": "#1.9 - 2",
+    "px-d3-imports": "^3.0.1",
+    "jquery": "^3.3.1",
+    "moment": "momentjs#^2.22.2"
+  },
+  "devDependencies": {
+    "px-starter-kit-design": "^1.0.0",
+    "px-demo": "^3.0.0",
+    "px-theme": "^3.0.0",
+    "web-component-tester": "^6.0.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "polymer": "^1.9.0"
+      },
+      "devDependencies": {
+        "web-component-tester": "^5.0.0"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.0"
+      }
+    }
+  }
+}
