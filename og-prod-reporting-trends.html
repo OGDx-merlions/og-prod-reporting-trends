@@ -4,6 +4,7 @@
     'gulp serve' (or similar server setup) to enable correct finding of bower dependencies for local runs.
 -->
 <link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html" />
 <link rel="import" href="../px-d3-imports/px-d3-imports.html" />
 
 <link rel="import" href="css/og-prod-reporting-trends-styles.html">
@@ -147,16 +148,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         }
       });
       this.async(this.notifyResize, 1);
-      // this.async(function () {
-      //   // access sibling or parent elements here
-      //   //  var el = Polymer.dom(this.root).querySelector("#ida .classa");
-      //   //  console.log("el",el);
-      //   var cards = Polymer.dom(this.root).querySelectorAll(".cards");
-      //   console.log("cards", cards);
-      //   if (cards.length > 0) {
-      //     pdom._paginate();
-      //   }
-      // }, 1);
     },
     get parent() {
       if (this.parentNode.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
@@ -273,7 +264,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
             }
           });
         }
-        // console.log("processedData", processedData);
         return processedData;
       }
       return [];

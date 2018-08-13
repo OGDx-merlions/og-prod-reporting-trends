@@ -30,6 +30,29 @@
           "defaultValue": "{}"
         },
         {
+          "name": "minHeight",
+          "type": "Number | null | undefined",
+          "description": "This property provides the height of the chart columns. Use it with the combination of wrapperHeight and heightDifference property to define the card layout (padding/margin) to fit according to the SVG layout.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 37,
+              "column": 6
+            },
+            "end": {
+              "line": 41,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "attributeType": "Number"
+            }
+          },
+          "defaultValue": "300"
+        },
+        {
           "name": "wrapperHeight",
           "type": "Number | null | undefined",
           "description": "This property provides the height of the layout. Use both wrapperHeight and heightDifference property to define the card layout (padding/margin) to fit according to the SVG layout.",
