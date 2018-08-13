@@ -19,41 +19,44 @@ Component used to create four column chart layout with production trend charts.
 
 ## Properties
 
-data: json array | null | undefined = {}notify
+data: json array | null | undefined = {}
 This property provides the data for the charts and layout.
 
-heightDifference: Number | null | undefined = 60notify
+heightDifference: Number | null | undefined = 60
 This property provides the difference of height used to calculate each chart column's height based on the wrapper height property, Math.min(this.minHeight = 300,(this.wrapperHeight - this.heightDifference) / 2).
 
-showLegends: Boolean = falsenotify
+showLegends: Boolean = false
 Including this property will show the legend panel.
 
 ```
 <og-prod-reporting-trends show-legends></og-prod-reporting-trends>
 ```
 
-showSubTitle: Boolean = falsenotify
+showSubTitle: Boolean = false
 Including this property will show the sub title.
 
 ```
 <og-prod-reporting-trends show-sub-title></og-prod-reporting-trends>
 ```
 
-showTrendIcon: Boolean = falsenotify
+showTrendIcon: Boolean = false
 Including this property will show the trend arrow icons.
 
 ```
 <og-prod-reporting-trends show-trend-icon></og-prod-reporting-trends>
 ```
 
-showTrendSubTitle: Boolean = falsenotify
+showTrendSubTitle: Boolean = false
 Including this property will show the trend sub title.
 
 ```
 <og-prod-reporting-trends show-trend-sub-title></og-prod-reporting-trends>
 ```
 
-wrapperHeight: Number | null | undefined = 600notify
+minHeight: Number | null | undefined = 300
+This property provides the height of the chart columns. Use it with the combination of wrapperHeight and heightDifference property to define the card layout (padding/margin) to fit according to the SVG layout.
+
+wrapperHeight: Number | null | undefined = 600
 This property provides the height of the layout. Use both wrapperHeight and heightDifference property to define the card layout (padding/margin) to fit according to the SVG layout.
 
 ### Prerequisites
