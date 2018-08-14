@@ -38,8 +38,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
               <template is="dom-repeat" items="{{rowitem}}" as="colitem" index-as="colindex">
                 <div id="cardCol{{cardindex}}{{rowindex}}{{colindex}}" class="u-1/2 u-1/2-desk cardCol">
                   <template is="dom-if" if="{{_isNotGreyBox(colitem)}}">
-                    <div class="flex flex--row flex--justify flex--top headingRow">
-                      <div>
+                    <div class="flex flex--wrap flex--top headingRow">
+                      <div class="u-2/3 u-2/3-desk">
                         <div id="colHeading" class="flex flex--col flex--spaced flex--top heading">
                           <div>
                             <span class="products">{{colitem.title}} ({{colitem.unit}}): {{colitem.chart.data.total}}</span>
@@ -49,7 +49,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
                           </div>
                         </div>
                       </div>
-                      <div>
+                      <div class="u-1/3 u-1/3-desk">
                         <div id="colTrendHeading" class="flex flex--col flex--spaced flex--bottom trend">
                           <div style$="{{_displayTrendIcon(showTrendIcon)}}">
                             <px-icon icon="{{_getTrendIcon(colitem.istrendup)}}" class$="{{_getTrendClass(colitem.istrendup)}}"></px-icon>
@@ -268,7 +268,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
             this.legends = cardlegends;
           }
         }
-        console.log("this.legends", this.legends);
         return processedData;
       }
       return [];
