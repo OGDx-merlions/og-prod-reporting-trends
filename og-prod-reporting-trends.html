@@ -40,11 +40,9 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
                   <template is="dom-if" if="{{_isNotGreyBox(colitem)}}">
                     <div class="flex flex--wrap flex--top headingRow">
                       <div class="u-5/6 u-5/6-desk">
-                        <!-- <div id="colHeading" class="flex flex--col flex--spaced flex--top heading"> -->
                         <div class="heading">
                           <span class="products">{{colitem.title}} ({{colitem.unit}}): {{colitem.chart.data.total}}</span>
                         </div>
-                        <!-- </div> -->
                       </div>
                       <div class="u-1/6 u-1/6-desk">
                         <div class="trend" style$="{{_displayTrendIcon(showTrendIcon)}}">
@@ -54,11 +52,9 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
                     </div>
                     <div class="flex flex--wrap flex--top headingRow">
                       <div class="u-1/2 u-1/2-desk">
-                        <!-- <div id="colTrendHeading" class="flex flex--col flex--spaced flex--bottom trend"> -->
                         <div class="heading" style$="{{_displaySubTitle(showSubTitle)}}">
                           <span class="cumulative">{{colitem.subtitle}}</span>
                         </div>
-                        <!-- </div> -->
                       </div>
                       <div class="u-1/2 u-1/2-desk">
                         <div class="trend" style$="{{_displayTrendSubTitle(showTrendSubTitle)}}">
