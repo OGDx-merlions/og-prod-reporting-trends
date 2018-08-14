@@ -1,18 +1,18 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../px-d3-imports/px-d3-imports.html" />
 
-<link rel="import" href="css/trend-chart-styles.html">
+<link rel="import" href="css/og-trend-chart-styles.html">
 <script src="scripts/plotly-latest.min.js"></script>
 
-<dom-module id="trend-chart">
+<dom-module id="og-trend-chart">
   <template>
-    <style include="trend-chart-styles"></style>
+    <style include="og-trend-chart-styles"></style>
     <div id="trendChart"></div>
   </template>
 </dom-module>
 <script>
   Polymer({
-    is: "trend-chart",
+    is: "og-trend-chart",
     properties: {
       data: {
         type: Object,

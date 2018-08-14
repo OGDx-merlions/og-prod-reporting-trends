@@ -8,7 +8,7 @@
 <link rel="import" href="../px-d3-imports/px-d3-imports.html" />
 
 <link rel="import" href="css/og-prod-reporting-trends-styles.html">
-<link rel="import" href="trend-chart.html">
+<link rel="import" href="og-trend-chart.html">
 
 <script src="../jquery/dist/jquery.min.js"></script>
 <script src="../moment/min/moment.min.js"></script>
@@ -61,7 +61,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
                       </div>
                     </div>
                   </template>
-                  <trend-chart data="[[colitem]]"></trend-chart>
+                  <og-trend-chart data="[[colitem]]"></og-trend-chart>
                 </div>
               </template>
             </div>
@@ -173,7 +173,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       cols.forEach(function (item, index) {
         item.style.height = calculatedHeight + "px";
         let headingRow = item.querySelector(".headingRow");
-        let trend = item.querySelector("trend-chart");
+        let trend = item.querySelector("og-trend-chart");
         if (headingRow) {
           trend._resizeChart(
             item.offsetWidth,
@@ -190,9 +190,9 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         let processedData = [],
           rows = [],
           cols = [],
-          legends = [];
+          templegends = [], cardlegends = [];
         let pdom = this;
-        if (JSON.stringify(this.data) !== "{}") {
+        if (JSON.stringify(tempdata) !== "{}") {
           let length = Object.keys(tempdata).length;
           let page = Math.ceil(length / 4);
           let remaining = page * 4 - length;
@@ -248,7 +248,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
                 legend.color = "#ccc";
                 legend.dash = "solid";
               }
-              legends.push(legend);
+              templegends.push(legend);
             } else {
               cols.push(item);
             }
@@ -258,12 +258,17 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
             }
             if (rows.length === 2) {
               processedData.push(rows);
-              pdom.legends.push(legends);
-              legends = [];
+              cardlegends.push(templegends);
+              templegends = [];
               rows = [];
             }
           });
+
+          if (cardlegends.length > 0) {
+            this.legends = cardlegends;
+          }
         }
+        console.log("this.legends", this.legends);
         return processedData;
       }
       return [];
