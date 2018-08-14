@@ -39,24 +39,30 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
                 <div id="cardCol{{cardindex}}{{rowindex}}{{colindex}}" class="u-1/2 u-1/2-desk cardCol">
                   <template is="dom-if" if="{{_isNotGreyBox(colitem)}}">
                     <div class="flex flex--wrap flex--top headingRow">
-                      <div class="u-2/3 u-2/3-desk">
-                        <div id="colHeading" class="flex flex--col flex--spaced flex--top heading">
-                          <div>
-                            <span class="products">{{colitem.title}} ({{colitem.unit}}): {{colitem.chart.data.total}}</span>
-                          </div>
-                          <div style$="{{_displaySubTitle(showSubTitle)}}">
-                            <span class="cumulative">{{colitem.subtitle}}</span>
-                          </div>
+                      <div class="u-5/6 u-5/6-desk">
+                        <!-- <div id="colHeading" class="flex flex--col flex--spaced flex--top heading"> -->
+                        <div class="heading">
+                          <span class="products">{{colitem.title}} ({{colitem.unit}}): {{colitem.chart.data.total}}</span>
+                        </div>
+                        <!-- </div> -->
+                      </div>
+                      <div class="u-1/6 u-1/6-desk">
+                        <div class="trend" style$="{{_displayTrendIcon(showTrendIcon)}}">
+                          <px-icon icon="{{_getTrendIcon(colitem.istrendup)}}" class$="{{_getTrendClass(colitem.istrendup)}}"></px-icon>
                         </div>
                       </div>
-                      <div class="u-1/3 u-1/3-desk">
-                        <div id="colTrendHeading" class="flex flex--col flex--spaced flex--bottom trend">
-                          <div style$="{{_displayTrendIcon(showTrendIcon)}}">
-                            <px-icon icon="{{_getTrendIcon(colitem.istrendup)}}" class$="{{_getTrendClass(colitem.istrendup)}}"></px-icon>
-                          </div>
-                          <div style$="{{_displayTrendSubTitle(showTrendSubTitle)}}">
-                            <span class="cumulative">{{colitem.trend_subtitle}}</span>
-                          </div>
+                    </div>
+                    <div class="flex flex--wrap flex--top headingRow">
+                      <div class="u-1/2 u-1/2-desk">
+                        <!-- <div id="colTrendHeading" class="flex flex--col flex--spaced flex--bottom trend"> -->
+                        <div class="heading" style$="{{_displaySubTitle(showSubTitle)}}">
+                          <span class="cumulative">{{colitem.subtitle}}</span>
+                        </div>
+                        <!-- </div> -->
+                      </div>
+                      <div class="u-1/2 u-1/2-desk">
+                        <div class="trend" style$="{{_displayTrendSubTitle(showTrendSubTitle)}}">
+                          <span class="cumulative">{{colitem.trend_subtitle}}</span>
                         </div>
                       </div>
                     </div>
@@ -172,12 +178,16 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       );
       cols.forEach(function (item, index) {
         item.style.height = calculatedHeight + "px";
-        let headingRow = item.querySelector(".headingRow");
+        let headingRow = item.querySelectorAll(".headingRow");
         let trend = item.querySelector("og-trend-chart");
         if (headingRow) {
+          let reducedheight = 0;
+          headingRow.forEach(function (item) {
+            reducedheight += item.offsetHeight;
+          });
           trend._resizeChart(
             item.offsetWidth,
-            item.offsetHeight - headingRow.offsetHeight
+            item.offsetHeight - reducedheight
           );
         } else {
           trend._resizeGreyBox(0, item.offsetHeight);
